@@ -4,13 +4,46 @@
   <meta charset="utf-8" />
   <meta http-equiv="x-ua-compatible" content="ie=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Chat Widget</title>
+  <title>Chat Widget (Domain 2) – Continue/Start by Thread</title>
+  <style>
+    body{font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 24px;}
+    .card{max-width: 640px; padding:16px; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,.04)}
+    label{display:block; font-weight:600; margin:.5rem 0 .25rem}
+    input, select{width:100%; padding:.6rem .7rem; border:1px solid #d1d5db; border-radius:8px; font-size:14px}
+    .hint{font-size:12px; color:#6b7280; margin-top:.25rem}
+    .row{display:grid; grid-template-columns:1fr; gap:12px}
+    .mt{margin-top:12px}
+  </style>
 </head>
 <body>
+  <h1>Chat – Domain 2</h1>
+  <div class="card">
+    <p>Enter the values you want to pass into <code>imichatwidget.init(...)</code> when you click the chat bubble.</p>
+
+    <div class="row">
+      <div>
+        <label for="threadIdInput">Thread ID</label>
+        <input id="threadIdInput" type="text" placeholder="e.g., 42b7a1bd-... or your upstream chat/thread id" />
+        <div class="hint">Leave blank if you are starting a brand new chat and do not want to resume any thread.</div>
+      </div>
+
+      <div class="mt">
+        <label for="actionSelect">Action</label>
+        <select id="actionSelect">
+          <option value="new" selected>new</option>
+          <option value="existing">existing</option>
+        </select>
+        <div class="hint">Select <strong>existing</strong> if you want your flow to attempt resuming/associating with a prior thread.</div>
+      </div>
+    </div>
+
+    <p class="hint mt">Tip: You can change these values anytime <em>before</em> opening the chat bubble. The values present when the widget is ready will be passed into <code>init</code>.</p>
+  </div>
+
   <!-- Chat widget mount point -->
   <div id="divicw" data-bind="79170865-2226-4987-A913-565D49053818" data-org=""></div>
- <h1>This is a test site</h1>
-  <!-- Widget bootstrap -->
+
+  <!-- Widget bootstrap (same loader pattern) -->
   <script>
     var i = {
       t: function (t) {
@@ -22,36 +55,82 @@
               var t = document.getElementById("divicw");
               if (this.status == 0) {
                 i.o(t);
-                return
+                return;
               }
               var e = document.createElement("script");
               e.innerHTML = this.responseText;
-              t.parentNode.insertBefore(e, t.nextSibling)
+              t.parentNode.insertBefore(e, t.nextSibling);
+              // After script is inserted, setup widget initialization
+              setupWidgetInit();
             }
           };
           o.open("GET", e, true);
-          o.send()
-        } catch (s) { console.error(s) }
+          o.send();
+        } catch (s) { console.error(s); }
       },
       o: function (t) {
         t.insertAdjacentHTML("afterend", '<iframe id="tls_al_frm" frameborder="0" style="overflow: hidden;height: 208px;width: 394px;position: fixed;display: block;right: 48px;bottom: 12px;z-index: 99999; display:none;"></iframe>');
         var e = document.getElementById("tls_al_frm");
         var o = e.contentWindow || (e.contentDocument.document || e.contentDocument);
         o.document.open();
-        o.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Untitled Document</title><style>body{font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;color: #99a0b0;font-size: 14px;}.popover__content{background-color: #fbfbfe; padding: 1.5rem; border-radius: 5px; width: 300px; box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);position: relative;}.popover__message{font-weight: 600;color:#56627c;font-size: 16px;}.pull-left{float:left;}.clearfix{clear: both;}.hdr-txt{width: 218px; margin-top: 3px;}.para-txt a{text-decoration: none;color: #005cde;}.close-btn{position: absolute;right:15px;top:15px;}.close-btn a{text-decoration: none;font-weight: 400; color: #56627c; font-size: 16px;}</style></head><body><div class="popover__content"><div class="close-btn"><a href="#" onclick="closeTLSAlert();">X</a></div><div class="popover__message"><div class="pull-left hdr-txt">This browser version is not supported on LiveChat.</div></div><div class="clearfix"></div><p class="para-txt">Please update your browser to the latest version and re-open the website to access the widget. </p></div><script>function closeTLSAlert(){window.parent.postMessage({key: "close_tls_alert",value: "close_tls_alert",action: "close_tls_alert"}, "*");}<\/script></body></html>');
+        o.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Unsupported Browser</title><style>body{font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;color: #99a0b0;font-size: 14px;}.popover__content{background-color: #fbfbfe; padding: 1.5rem; border-radius: 5px; width: 300px; box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);position: relative;}.popover__message{font-weight: 600;color:#56627c;font-size: 16px;}.pull-left{float:left;}.clearfix{clear: both;}.hdr-txt{width: 218px; margin-top: 3px;}.para-txt a{text-decoration: none;color: #005cde;}.close-btn{position: absolute;right:15px;top:15px;}.close-btn a{text-decoration: none;font-weight: 400; color: #56627c; font-size: 16px;}</style></head><body><div class="popover__content"><div class="close-btn"><a href="#" onclick="closeTLSAlert();">X</a></div><div class="popover__message"><div class="pull-left hdr-txt">This browser version is not supported on LiveChat.</div></div><div class="clearfix"></div><p class="para-txt">Please update your browser to the latest version and re-open the website to access the widget. </p></div><script>function closeTLSAlert(){window.parent.postMessage({key: "close_tls_alert",value: "close_tls_alert",action: "close_tls_alert"}, "*");}<\/script></body></html>');
         o.document.close();
         e.style.display = "block";
         window.addEventListener("message", function (t) {
-          if (t.data.action == "close_tls_alert") { i.s() }
-        })
+          if (t.data.action == "close_tls_alert") { i.s(); }
+        });
       },
       s: function () {
         var t = document.getElementById("tls_al_frm");
-        t.remove()
+        if (t) t.remove();
       }
     };
     i.t(function (t) { });
   </script>
+
+  <!-- Init that reads the form values and passes them to the flow -->
+  <script>
+    function setupWidgetInit() {
+      console.log("Setting up widget initialization on Domain 2...");
+
+      const threadInput = document.getElementById('threadIdInput');
+      const actionSelect = document.getElementById('actionSelect');
+
+      // Poll for global imichatwidget
+      const pollId = setInterval(function(){
+        if (typeof imichatwidget !== 'undefined') {
+          clearInterval(pollId);
+          console.log("imichatwidget detected – attaching ready handler");
+
+          // Read current UI values at the moment the widget is ready
+          imichatwidget.on("imichat-widget:ready", function(appId){
+            const threadId = (threadInput.value || '').trim();
+            const action = (actionSelect.value || 'new').trim();
+
+            const payload = {
+              custom_chat_fields: {
+                threadId: threadId,
+                action: action
+              }
+            };
+
+            const strPayload = JSON.stringify(payload);
+            console.log("Calling imichatwidget.init with:", payload);
+
+            imichatwidget.init(strPayload, function(resp){
+              console.log("init() callback:", resp);
+            });
+          });
+        }
+      }, 100);
+
+      // Fail-safe timeout
+      setTimeout(function(){
+        if (typeof imichatwidget === 'undefined') {
+          console.error("imichatwidget never became available (10s timeout)");
+        }
+      }, 10000);
+    }
+  </script>
 </body>
 </html>
-
