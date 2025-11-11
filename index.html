@@ -16,7 +16,7 @@
   </style>
 </head>
 <body>
-  <h1>Chat – Domain 2</h1>
+  <h1>Chat – Domain 2 V1.1</h1>
   <div class="card">
     <p>Enter the values you want to pass into <code>imichatwidget.init(...)</code> when you click the chat bubble.</p>
 
@@ -88,7 +88,7 @@
     i.t(function (t) { });
   </script>
 
-  <!-- Init that reads the form values and passes them to the flow -->
+  <!-- Init that syncs form values to the widget and ensures they're present before user opens chat -->
   <script>
     function setupWidgetInit() {
       console.log("Setting up widget initialization on Domain 2...");
@@ -96,31 +96,38 @@
       const threadInput = document.getElementById('threadIdInput');
       const actionSelect = document.getElementById('actionSelect');
 
+      function buildPayload(){
+        const threadId = (threadInput.value || '').trim();
+        const action = (actionSelect.value || 'new').trim();
+        return { custom_chat_fields: { threadId, action } };
+      }
+
+      function sendUpdate(reason){
+        try {
+          const p = JSON.stringify(buildPayload());
+          console.log("imichatwidget.update()", reason, p);
+          // Update ensures future chats (including the one the user is about to start) carry these values
+          imichatwidget.update(p, function(resp){ console.log("update() cb:", resp); });
+        } catch(err){ console.error("update failed", err); }
+      }
+
       // Poll for global imichatwidget
       const pollId = setInterval(function(){
         if (typeof imichatwidget !== 'undefined') {
           clearInterval(pollId);
-          console.log("imichatwidget detected – attaching ready handler");
+          console.log("imichatwidget detected – preparing handlers");
 
-          // Read current UI values at the moment the widget is ready
+          // On widget ready, push the current form values once
           imichatwidget.on("imichat-widget:ready", function(appId){
-            const threadId = (threadInput.value || '').trim();
-            const action = (actionSelect.value || 'new').trim();
-
-            const payload = {
-              custom_chat_fields: {
-                threadId: threadId,
-                action: action
-              }
-            };
-
-            const strPayload = JSON.stringify(payload);
-            console.log("Calling imichatwidget.init with:", payload);
-
-            imichatwidget.init(strPayload, function(resp){
-              console.log("init() callback:", resp);
-            });
+            sendUpdate("on-ready");
           });
+
+          // Also push updates whenever user changes inputs (so the bubble click later will use latest)
+          threadInput.addEventListener('input', ()=> sendUpdate('threadId-input'));
+          actionSelect.addEventListener('change', ()=> sendUpdate('action-change'));
+
+          // As an extra safety, when page gains focus again (e.g., after copy/paste), sync once more
+          window.addEventListener('focus', ()=> sendUpdate('window-focus'));
         }
       }, 100);
 
